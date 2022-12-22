@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 
 export default function HomeLayout({ children }) {
   let location = useLocation();
-  const [activeLink, setActiveLink] = useState("");
+  let navigate = useNavigate();
 
   useEffect(() => {
-    console.log(location.pathname);
-    if (location.pathname) {
-      setActiveLink("bordered");
+    if(!localStorage.getItem('token')) {
+      navigate('/')
     }
   }, []);
   return (

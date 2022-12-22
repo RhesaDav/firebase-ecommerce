@@ -1,7 +1,23 @@
-import React from "react";
+import { collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { db } from "../firebase";
 import HomeLayout from "../layout/HomeLayout";
 
 export default function Product() {
+  let navigate = useNavigate()
+  const [data, setData] = useState()
+
+  const fetchData = async() => {
+    await getDocs(collection(db, "product")).then((res) => {
+      const data = res.docs.map((item) => item.data())
+      setData(data)
+    })
+  }
+
+  useEffect(() => {
+    fetchData()
+  },[])
   return (
     <HomeLayout>
       <div className="flex gap-10 items-center mb-5">
@@ -10,14 +26,16 @@ export default function Product() {
           placeholder="Type here"
           className="input input-bordered w-2/3"
         />
-        <select class="select select-bordered w-1/4">
-          <option disabled hidden selected>
+        <select className="select select-bordered w-1/4 capitalize">
+          <option selected disabled hidden>
             Select Category
           </option>
-          <option>Han Solo</option>
-          <option>Greedo</option>
+          {/* <option>Han Solo</option> */}
+        {['clothing', 'electronic', 'food'].map((item,index) => (
+          <option>{item}</option>
+          ))}
         </select>
-        <button className="btn btn-ghost bg-base-200">Add Product</button>
+        <button onClick={() => navigate('/product/add')} className="btn btn-ghost bg-base-200">Add Product</button>
       </div>
       <div className="overflow-x-auto w-full">
         <table className="table w-full">
@@ -37,7 +55,8 @@ export default function Product() {
           </thead>
           <tbody>
             {/* <!-- row 1 --> */}
-            <tr>
+            {data?.map((item,index) => (
+            <tr key={index}>
               <th>
                 <label>
                   <input type="checkbox" className="checkbox" />
@@ -48,20 +67,20 @@ export default function Product() {
                   <div className="avatar">
                     <div className="mask mask-squircle w-12 h-12">
                       <img
-                        src="https://w7.pngwing.com/pngs/294/922/png-transparent-pile-of-clothes-washing-machines-self-service-laundry-clothes-dryer-washed-miscellaneous-textile-cleaning.png"
+                        src={item.image}
                         alt="Avatar Tailwind CSS Component"
                       />
                     </div>
                   </div>
                   <div>
-                    <div className="font-bold">Product Name</div>
+                    <div className="font-bold">{item.productName}</div>
                     <div className="text-sm opacity-50">
-                      Cloth, Computer, Book
+                      {item.categories}
                     </div>
                   </div>
                 </div>
               </td>
-              <td>Rp. 7.000.000</td>
+              <td>Rp. {item.price}</td>
               <td>
                 <div className="rating">
                   <input
@@ -73,7 +92,6 @@ export default function Product() {
                     type="radio"
                     name="rating-1"
                     className="mask mask-star"
-                    checked
                   />
                   <input
                     type="radio"
@@ -97,6 +115,7 @@ export default function Product() {
                 <button className="btn btn-ghost btn-xs">delete</button>
               </th>
             </tr>
+            ))}
           </tbody>
         </table>
       </div>

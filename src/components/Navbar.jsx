@@ -1,11 +1,24 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import {signOut} from 'firebase/auth'
+import { auth } from '../firebase'
 
 export default function Navbar({location}) {
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    localStorage.removeItem('token')
+    navigate('/')
+    // await signOut(auth).then((res) => {
+    //   console.log(res)
+    // })
+  }
+
   return (
     <div className="navbar bg-base-300 rounded-xl px-5">
     <div className="flex-1">
-      <div className="btn btn-ghost text-xl capitalize">
-        {location.substring(1)}
+      <div onClick={()=>navigate(-1)} className="btn btn-ghost text-xl capitalize">
+        {'< '+ location.substring(1)}
       </div>
     </div>
     <div className="flex gap-5">
@@ -63,7 +76,7 @@ export default function Navbar({location}) {
             <div>Settings</div>
           </li>
           <li>
-            <div>Logout</div>
+            <div onClick={handleLogout}>Logout</div>
           </li>
         </ul>
       </div>
